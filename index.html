@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PINEAPPLE MYSTERY - Official 1.0</title>
+<style>
+  :root { --bg: #050505; --accent: #f4d03f; --red: #cc0000; --blue: #2b57ff; --green: #28a745; }
+  body { 
+    font-family: 'Courier New', monospace; background: var(--bg); color: #e0e0e0;
+    margin: 0; padding: 0; text-align: center; overflow-x: hidden;
+  }
+  
+  /* 버전 태그 */
+  .v-tag { position: fixed; top: 45px; right: 20px; font-size: 10px; color: #444; font-weight: bold; z-index: 20; }
+
+  /* CAUTION 흐르는 띠 */
+  .ticker-wrap { width: 100%; overflow: hidden; background: var(--accent); color: #000; padding: 8px 0; font-weight: 900; position: fixed; z-index: 15; }
+  .t-top { top: 0; } .t-bottom { bottom: 0; }
+  .ticker { display: inline-block; white-space: nowrap; animation: ticker 30s linear infinite; }
+  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  /* 해킹 로딩 화면 */
+  #h-screen {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 100; flex-direction: column; justify-content: center; align-items: center;
+  }
+  .h-msg { color: #fff; font-size: 14px; margin-bottom: 15px; min-height: 20px; }
+  .p-cont { width: 200px; height: 3px; background: #222; }
+  .p-bar { width: 0%; height: 100%; background: #fff; transition: width 0.1s; }
+
+  /* 레이아웃 */
+  .wrapper { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+  .card { background: rgba(15, 15, 15, 0.95); padding: 40px 30px; border-radius: 20px; border: 1px solid #333; width: 100%; max-width: 380px; box-shadow: 0 10px 50px rgba(0,0,0,0.8); position: relative; }
+  
+  .btn { background: #111; color: #fff; border: 1px solid #444; padding: 16px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold; font-size: 16px; }
+  .btn:active { background: #222; border-color: var(--accent); }
+  
+  /* 결과 화면 (흰색 박스) */
+  #result { display: none; background: #f5f5f5 !important; color: #111; border: none; }
+  #role { font-size: 48px; font-weight: 900; margin-bottom: 5px; }
+  #skill { font-size: 32px; font-weight: bold; margin: 15px 0; }
+  #desc { font-size: 16px; color: #666; margin-bottom: 30px; line-height: 1.5; }
+  
+  /* 킬러 타입 공개 화면 */
+  #final-screen { display: none; }
+  .type-text { font-size: 55px; font-weight: 900; margin: 20px 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+  
+  /* 로그 박스 & 비밀번호 */
+  .log-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #222; }
+  #log-box { display: none; text-align: left; background: #000; padding: 15px; font-size: 13px; color: #0f0; margin-top: 15px; border: 1px solid #030; font-family: monospace; }
+  .pw-input { background: #000; border: 1px solid #333; color: #fff; padding: 10px; width: 120px; text-align: center; border-radius: 5px; margin-bottom: 10px; }
+
+  /* 하단 스크롤 데이터 센터 */
+  .info-area { background: #080808; padding: 80px 20px; width: 100%; border-top: 1px solid #1a1a1a; }
+  .data-box { display: inline-block; text-align: left; font-size: 12px; color: #555; border: 1px dashed #333; padding: 25px; line-height: 1.8; max-width: 500px; }
+  
+  /* 특수 효과 색상 */
+  .sk-gun { background: linear-gradient(45deg, #ff1801, #3712ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .sk-gold { color: #b8860b; } .sk-pink { color: #ff66ff; }
+</style>
+</head>
+<body>
+
+<div class="v-tag">Official 1.0</div>
+
+<div class="ticker-wrap t-top">
+  <div class="ticker">SYSTEM ONLINE 🍍 ACCESS GRANTED 🍍 PINEAPPLE HQ 🍍 SECURITY LEVEL: HIGH 🍍 SYSTEM ONLINE 🍍 ACCESS GRANTED 🍍 PINEAPPLE HQ 🍍 SECURITY LEVEL: HIGH 🍍</div>
+</div>
+
+<div id="h-screen">
+  <div class="h-msg" id="h-msg">INITIALIZING...</div>
+  <div class="p-cont"><div class="p-bar" id="p-bar"></div></div>
+</div>
+
+<div class="wrapper">
+  <div id="menu" class="card">
+    <h1 style="color:var(--accent); letter-spacing:8px; margin-bottom:30px;">PINEAPPLE</h1>
+    <div style="margin-bottom:25px;">
+      <span style="font-size:12px; color:#444; margin-right:10px;">SPECIAL SKILLS</span>
+      <input type="checkbox" id="useSkills" checked style="transform: scale(1.5); vertical-align: middle;">
+    </div>
+    <div style="margin-bottom:30px; color:#888;">
+      PLAYER COUNT : <input type="number" id="pCount" min="4" max="20" value="6" style="background:none; border:none; border-bottom:1px solid #444; color:#fff; width:50px; text-align:center; font-size:18px;">
+    </div>
+    <button onclick="bootSystem()" class="btn" style="color:var(--accent); border-color:var(--accent);">INITIALIZE SYSTEM</button>
+  </div>
+
+  <div id="draw-area" class="card" style="display:none;">
+    <div id="pNum" style="font-size:24px; color:#555; margin-bottom:30px; letter-spacing:2px;"></div>
+    <button onclick="reveal()" class="btn" style="background:var(--red); border:none; font-size:20px;">ACCESS ROLE</button>
+  </div>
+
+  <div id="result" class="card">
+    <div id="role"></div>
+    <div id="skill"></div>
+    <div id="desc"></div>
+    <button onclick="next()" class="btn" style="background:#000; color:#fff;">CONFIRM & DESTROY</button>
+  </div>
+
+  <div id="final-screen" class="card">
+    <div style="font-size:14px; color:#444; letter-spacing:3px;">MISSION ANALYSIS</div>
+    <div id="fType" class="type-text"></div>
+    <div id="fDesc" style="font-size:16px; color:#888; margin-bottom:40px; line-height:1.4;"></div>
+    
+    <div class="log-section">
+      <input type="password" id="pw" class="pw-input" placeholder="PASS CODE">
+      <button onclick="checkLog()" class="btn" style="font-size:12px; margin-top:0;">RECOVER DATA LOG</button>
+      <div id="log-box"></div>
+    </div>
+    
+    <button onclick="location.reload()" class="btn" style="background:none; border-color:#222; color:#333; margin-top:30px; font-size:12px;">REBOOT SYSTEM</button>
+  </div>
+</div>
+
+<div class="info-area">
+  <div style="font-size:40px; margin-bottom:20px;">🍍</div>
+  <div class="data-box">
+    > PINEAPPLE SECURITY DATABASE v1.0<br>
+    > CORE STATUS: <span style="color:var(--green)">STABLE</span><br>
+    > ENCRYPTION KEY: <span style="color:var(--accent)">0217-ACTIVE</span><br><br>
+    [SYSTEM PROTOCOL]<br>
+    - 머더는 자신의 정체를 숨기십시오.<br>
+    - 시민 중 최대 2명만이 특별한 능력을 부여받습니다.<br>
+    - 모든 데이터는 확인 즉시 파기됩니다.
+  </div>
+</div>
+
+<div class="ticker-wrap t-bottom">
+  <div class="ticker">🍍 DO NOT CROSS 🍍 PINEAPPLE CORP 🍍 CLASSIFIED DATA 🍍 DO NOT CROSS 🍍 PINEAPPLE CORP 🍍 CLASSIFIED DATA 🍍</div>
+</div>
+
+<script>
+const skills = {
+  머더: [{n:"방탄", d:"한 번 공격을 버팁니다. (2목숨)입니다."}, {n:"가방", d:"죽인 대상이 살아있는 것처럼 행동하다가 마지막에 사망합니다. (1명)입니다."}, {n:"총잡이", d:"보안관과 같은 방식으로 처치합니다.", s:"sk-gun"}],
+  보안관: [{n:"강인한", d:"목숨이 2개가 됩니다.입니다."}, {n:"마피아", d:"머더와 모든 시민을 제거하면 즉시 승리합니다.", s:"sk-gold"}],
+  의사: [{n:"자가치유", d:"자신을 치료할 수 있습니다. (1회)입니다."}, {n:"전문 의사", d:"최대 2명까지 치료할 수 있습니다.입니다."}],
+  시민: [{n:"스파이", d:"시민/보안관 제거 시 목숨 증가. 머더 처치 시 동귀어진하며 시민이 승리합니다.", s:"sk-gold"}, {n:"퍼블win", d:"가장 먼저 머더에게 죽으면 즉시 시민이 승리합니다.", s:"sk-pink"}, {n:"패링", d:"한 번 공격을 막아냅니다.입니다."}]
+};
+
+const mTypes = [
+  {n:"Standard", w:60, d:"추가 능력이 포함된 기본 라운드입니다.", c:"#cc0000"},
+  {n:"Chillsear", w:30, d:"의사가 치료할 수 없는 무자비한 암살 라운드입니다.", c:"#87CEEB"},
+  {n:"Zombie", w:10, d:"죽은 자가 좀비가 되어 감염시키는 라운드입니다.", c:"#32CD32"}
+];
+
+const hMsgs = ["파인애플 껍질 해독 중...", "비밀번호 0217 암호화 적용 중...", "숙성 엔진 가동 중...", "데이터 센터 연결 시도 중..."];
+let tP, cur, rls, rMT, uS, aS, log = [];
+
+function bootSystem() {
+  document.getElementById("h-screen").style.display = "flex";
+  let p = 0;
+  const bar = document.getElementById("p-bar");
+  const msg = document.getElementById("h-msg");
+  
+  const iv = setInterval(() => {
+    p += Math.random() * 10;
+    if(p >= 100) {
+      p = 100;
+      clearInterval(iv);
+      setTimeout(startGame, 600);
+    }
+    bar.style.width = p + "%";
+    if(Math.random() > 0.8) msg.innerText = hMsgs[Math.floor(Math.random()*hMsgs.length)];
+  }, 80);
+}
+
+function startGame() {
+  document.getElementById("h-screen").style.display = "none";
+  tP = parseInt(document.getElementById("pCount").value);
+  uS = document.getElementById("useSkills").checked;
+  
+  rls = ["머더", "보안관", "의사"];
+  for(let i=4; i<=tP; i++) rls.push("시민");
+  rls.sort(() => Math.random() - 0.5);
+
+  const pool = {
+    머더: [...skills.머더].sort(()=>Math.random()-0.5),
+    보안관: [...skills.보안관].sort(()=>Math.random()-0.5),
+    의사: [...skills.의사].sort(()=>Math.random()-0.5),
+    시민: [...skills.시민].sort(()=>Math.random()-0.5)
+  };
+
+  let cIdxs = []; rls.forEach((r, i) => { if(r==="시민") cIdxs.push(i); });
+  cIdxs.sort(()=>Math.random()-0.5);
+  let lucky = cIdxs.slice(0, 2);
+
+  const rand = Math.random() * 100; let cum = 0;
+  for(const t of mTypes) { cum += t.w; if(rand < cum) { rMT = t; break; } }
+
+  aS = rls.map((r, i) => {
+    if(!uS) return {n:"무능력", d:"능력이 없습니다.입니다."};
+    if(r==="머더") {
+      return (rMT.n==="Standard" && pool.머더.length > 0) ? pool.머더.pop() : {n:"SPECIAL", d:"특수 타입입니다. 정체는 마지막에 공개됩니다."};
+    }
+    if(r==="시민") return lucky.includes(i) ? pool.시민.pop() : {n:"무능력", d:"능력이 없습니다.입니다."};
+    return pool[r].pop();
+  });
+
+  log = rls.map((r, i) => `[PLAYER ${i+1}] ${r} : ${aS[i].n}`);
+  cur = 0;
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("draw-area").style.display = "block";
+  document.getElementById("pNum").innerText = `IDENTIFYING PLAYER 1...`;
+  window.scrollTo(0,0);
+}
+
+function reveal() {
+  const r = rls[cur];
+  const s = aS[cur];
+  const rE = document.getElementById("role");
+  const sE = document.getElementById("skill");
+  
+  rE.innerText = r;
+  rE.style.color = r==="머더"? "var(--red)" : r==="보안관"? "var(--blue)" : r==="의사"? "var(--green)" : "#666";
+  sE.innerText = s.n;
+  sE.className = s.s || "";
+  document.getElementById("desc").innerText = s.d;
+  
+  document.getElementById("draw-area").style.display = "none";
+  document.getElementById("result").style.display = "block";
+}
+
+function next() {
+  cur++;
+  if(cur >= tP) {
+    document.getElementById("result").style.display = "none";
+    document.getElementById("final-screen").style.display = "block";
+    const fT = document.getElementById("fType");
+    fT.innerText = uS ? rMT.n : "GAME START";
+    fT.style.color = uS ? rMT.c : "#fff";
+    document.getElementById("fDesc").innerText = uS ? rMT.d : "능력 없이 진행되는 클래식 모드입니다.";
+    return;
+  }
+  document.getElementById("result").style.display = "none";
+  document.getElementById("draw-area").style.display = "block";
+  document.getElementById("pNum").innerText = `IDENTIFYING PLAYER ${cur+1}...`;
+}
+
+function checkLog() {
+  const input = document.getElementById("pw").value;
+  if(input === "0217") {
+    document.getElementById("log-box").innerHTML = "> LOG RECOVERY COMPLETE:<br><br>" + log.join("<br>");
+    document.getElementById("log-box").style.display = "block";
+  } else {
+    alert("ACCESS DENIED: WRONG PASS CODE");
+  }
+}
+</script>
+</body>
+</html>
